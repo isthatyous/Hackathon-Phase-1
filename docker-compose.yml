@@ -1,23 +1,18 @@
 version: "3.8"
 
 services:
-
-  online_shop:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    container_name: online_shop
+  online-shop:
+    container_name: online-shop-container
+    build: 
+       context: .
+       dockerfile: Dockerfile
     ports:
-      - "3000:5173"
-    restart: always
+      - "3000:80"
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:3000/"]
-      interval: 60s
+      test: ["CMD", "curl", "-f", "http://localhost:3000/"] 
+      interval: 40s
       timeout: 10s
-      retries: 5
-    networks:
-      - online_shop
+      retries: 3
+      start_period: 60s
 
-networks:
-  online_shop:
-    driver: bridge
+    restart: always

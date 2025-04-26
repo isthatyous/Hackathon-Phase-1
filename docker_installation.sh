@@ -1,47 +1,44 @@
 #!/bin/bash
 
-# Docker Installation
-function docker_installation() {
-    if [ "$EUID" -ne 0 ]; then
-        echo "Please run as root or use sudo"
-        exit 1
-    fi
+: << 'help' 
+ This script is written for Automation of docker & docker-compose installation...
+help
 
-    # Updating Packages and Installing Dependicies
-    sudo apt-get update
-    sudo apt-get install -y \
-        apt-transport-https \
-        ca-certificates \
-        curl \
-        gnupg \
-        lsb-release
+# docker installation
+function docker_installation(){
+        # Check if Docker is installed
+        if command -v docker &> /dev/null; then
+                echo "Docker installation found"
+        else
+                echo "Docker not found "
+                echo "Installing Docker..."
+                
+                # Install Docker for Ubuntu, Debian
+                sudo apt-get install docker.io -y &> /dev/null
 
-    # Downloading Docker
-    curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
-
-    echo \
-      "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu \
-      $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
-
-    sudo apt-get update
-    sudo apt-get install -y docker-ce docker-ce-cli containerd.io
-
-    echo "Docker installation completed successfully"
+          
+                # Adding current user to the docker group
+		echo "Adding current user to the docker group"
+                sudo usermod -aG docker "$USER"
+                newgrp docker
+                echo "Docker installed successfully"
+        fi
+}
+function docker_compose_installation(){
+        # Check if Docker Compose is installed
+        if command -v docker-compose &> /dev/null; then
+                echo "Docker Compose installation found"
+        else
+                echo "Docker Compose not found"
+                echo "Installing Docker Compose..."
+	       	sudo apt-get install -y curl
+                sudo curl -SL https://github.com/docker/compose/releases/download/v2.21.0/docker-compose-linux-x86_64 -o /usr/local/bin/docker-compose
+                sudo chmod +x /usr/local/bin/docker-compose
+                echo "Docker Compose installed successfully"
+        fi
 }
 
-function docker_compose_installation() {
-    if [ "$EUID" -ne 0 ]; then
-        echo "Please run as root or use sudo"
-        exit 1
-    fi
-
-    # Downloading Docker Compose
-    sudo curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
-    sudo chmod +x /usr/local/bin/docker-compose
-    docker-compose --version
-
-    echo "Docker Compose installation completed successfully"
-}
 
 docker_installation
 docker_compose_installation
+
