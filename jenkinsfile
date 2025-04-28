@@ -33,7 +33,7 @@ pipeline {
 
         stage('Build') {
             steps {
-                node { 
+                script { 
                          def customImage = docker.build("${image_name}:${env.BUILD_ID}")
                         withCredentials([usernamePassword(credentialsId: 'DockerHub-Creds', usernameVariable: 'DockerHubusername', passwordVariable: 'DockerHubpassword')]) {
                             sh """
