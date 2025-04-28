@@ -35,11 +35,11 @@ pipeline {
             steps {
                 script { 
                          def customImage = docker.build("${image_name}:${env.BUILD_ID}")
-                withCredentials([usernamePassword(credentialsId: 'DockerHub-Creds', usernameVariable: 'DockerHubusername', passwordVariable: 'DockerHubpassword')]) {
-                    sh """
-                    echo ${DockerHubpassword} | docker login -u ${DockerHubusername} --password-stdin
-                    docker tag ${image_name} ${DockerHubusername}/${image_name}:tag_name
-                    """
+                        withCredentials([usernamePassword(credentialsId: 'DockerHub-Creds', usernameVariable: 'DockerHubusername', passwordVariable: 'DockerHubpassword')]) {
+                            sh """
+                            echo ${DockerHubpassword} | docker login -u ${DockerHubusername} --password-stdin
+                            docker tag ${customImage.id} ${DockerHubusername}/${image_name}:{env.BUILD_ID}
+                            """
 }
                 }
             }
