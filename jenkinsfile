@@ -40,6 +40,7 @@ pipeline {
                     echo ${DockerHubpassword} | docker login -u ${DockerHubusername} --password-stdin
                     docker tag ${image_name} ${DockerHubusername}/${image_name}:tag_name
                     """
+}
                 }
             }
         }
