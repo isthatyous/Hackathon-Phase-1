@@ -14,7 +14,7 @@ pipeline {
 
         stage('SonarQube analysis') {
             steps {
-                script {
+                node {
                     // Define the scannerHome variable with the tool location
                     scannerHome = tool 'SonarQube'
                 }
