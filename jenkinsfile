@@ -24,8 +24,8 @@ pipeline {
                     ${scannerHome}/bin/sonar-scanner \
                     -Dsonar.projectKey=online-shop-key \
                     -Dsonar.sources=. \
-                    -Dsonar.host.url=http://13.233.113.146:9100 \
-                    -Dsonar.login=squ_736bf210416e622c9b5517ea0fed8b9280aad05d
+                    -Dsonar.host.url=http://65.0.184.2:9100 \
+                    -Dsonar.login=squ_a372680716d40aa8cb967c755ed9ad301555c168
                     """
                 }
             }
