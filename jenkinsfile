@@ -25,7 +25,7 @@ pipeline {
                     -Dsonar.projectKey=online-shop-key \
                     -Dsonar.sources=. \
                     -Dsonar.host.url=http://13.234.38.127:9100 \
-                    -Dsonar.login=squ_a372680716d40aa8cb967c755ed9ad301555c168
+                    -Dsonar.login=squ_ad703a4e7804383c5b76d1f9d8eb78f69d0a363c
                     """
                 }
             }
