@@ -34,11 +34,10 @@ pipeline {
         stage('Build') {
             steps {
                 script { 
-                         tag_name={env.BUILD_ID}
+                         def customImage = docker.build("${image_name}:${env.BUILD_ID}")
                 withCredentials([usernamePassword(credentialsId: 'DockerHub-Creds', usernameVariable: 'DockerHubusername', passwordVariable: 'DockerHubpassword')]) {
                     sh """
                     echo ${DockerHubpassword} | docker login -u ${DockerHubusername} --password-stdin
-                    docker build -t ${image_name} .
                     docker tag ${image_name} ${DockerHubusername}/${image_name}:tag_name
                     """
                 }
