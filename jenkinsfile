@@ -37,7 +37,7 @@ pipeline {
                     sh """
                     echo ${DockerHubpassword} | docker login -u ${DockerHubusername} --password-stdin
                     docker build -t ${image_name} .
-                    docker tag ${image_name} ${DockerHubusername}/${image_name}:latest
+                    docker tag ${image_name} ${DockerHubusername}/${image_name}:{env.BUILD_ID}
                     """
                 }
             }
