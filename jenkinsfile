@@ -14,7 +14,7 @@ pipeline {
 
         stage('SonarQube analysis') {
             steps {
-                node {
+                script {
                     // Define the scannerHome variable with the tool location
                     scannerHome = tool 'SonarQube'
                 }
@@ -33,7 +33,7 @@ pipeline {
 
         stage('Build') {
             steps {
-                script { 
+                node { 
                          def customImage = docker.build("${image_name}:${env.BUILD_ID}")
                         withCredentials([usernamePassword(credentialsId: 'DockerHub-Creds', usernameVariable: 'DockerHubusername', passwordVariable: 'DockerHubpassword')]) {
                             sh """
