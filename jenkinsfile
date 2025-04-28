@@ -34,12 +34,13 @@ pipeline {
         stage('Build') {
             steps {
                 script { 
-                         def customImage = docker.build("${image_name}:${env.BUILD_ID}")
+                        sh "echo jenkins_${env.BRANCH_NAME}_${env.BUILD_ID}"
+                        def customImage = docker.build("${image_name}:${env.BUILD_ID}")
                         withCredentials([usernamePassword(credentialsId: 'DockerHub-Creds', usernameVariable: 'DockerHubusername', passwordVariable: 'DockerHubpassword')]) {
-                            sh """
-                            echo ${DockerHubpassword} | docker login -u ${DockerHubusername} --password-stdin
-                            docker tag ${DockerHubusername}/${image_name}:{env.BUILD_ID}
-                            """
+                        sh """
+                        echo ${DockerHubpassword} | docker login -u ${DockerHubusername} --password-stdin
+                        docker tag ${image_name}:${env.BUILD_ID} ${DockerHubusername}/${image_name}:${env.BUILD_ID}
+                        """
 }
                 }
             }
@@ -48,7 +49,7 @@ pipeline {
         stage('Trivy Image Scan'){
             steps {
                 withCredentials([usernamePassword(credentialsId: 'DockerHub-Creds', usernameVariable: 'DockerHubusername', passwordVariable: 'DockerHubpassword')]) {
-                sh 'trivy image ${DockerHubusername}/${image_name}:latest'
+                sh 'trivy image ${DockerHubusername}/${image_name}:${env.BUILD_ID}'
             }
         }
     }
@@ -56,7 +57,7 @@ pipeline {
         stage('Push to Docker Hub'){
           steps{
               withCredentials([usernamePassword(credentialsId: 'DockerHub-Creds', usernameVariable: 'DockerHubusername', passwordVariable: 'DockerHubpassword')]) {
-              sh 'docker push ${DockerHubusername}/${image_name}:latest'
+            sh 'docker push ${DockerHubusername}/${image_name}:${env.BUILD_ID}'
             }
         }
     }
