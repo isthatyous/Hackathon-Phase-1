@@ -1,8 +1,8 @@
 pipeline {
     agent any
-    
+
     environment {
-        image_name = 'online-shop-image'  
+        image_name = 'online-shop-image'
     }
 
     stages {
@@ -15,17 +15,15 @@ pipeline {
         stage('SonarQube analysis') {
             steps {
                 script {
-                    // Define the scannerHome variable with the tool location
                     scannerHome = tool 'SonarQube'
                 }
                 withSonarQubeEnv('SonarQube') {
-                    // Run the SonarQube scanner with the provided configuration
                     sh """
-                    ${scannerHome}/bin/sonar-scanner \
-                    -Dsonar.projectKey=online-shop-key \
-                    -Dsonar.sources=. \
-                    -Dsonar.host.url=http://13.234.38.127:9100 \
-                    -Dsonar.login=squ_ad703a4e7804383c5b76d1f9d8eb78f69d0a363c
+                        ${scannerHome}/bin/sonar-scanner \
+                        -Dsonar.projectKey=online-shop-key \
+                        -Dsonar.sources=. \
+                        -Dsonar.host.url=http://13.234.38.127:9100 \
+                        -Dsonar.login=squ_ad703a4e7804383c5b76d1f9d8eb78f69d0a363c
                     """
                 }
             }
@@ -33,35 +31,35 @@ pipeline {
 
         stage('Build') {
             steps {
-                script { 
-                        sh "echo jenkins_${env.BRANCH_NAME}_${env.BUILD_ID}"
-                        def customImage = docker.build("${image_name}:${env.BUILD_ID}")
-                        withCredentials([usernamePassword(credentialsId: 'DockerHub-Creds', usernameVariable: 'DockerHubusername', passwordVariable: 'DockerHubpassword')]) {
+                script {
+                    sh "echo jenkins_${env.BRANCH_NAME}_${env.BUILD_ID}"
+                    
+                    sh "docker build -t ${image_name}:${env.BUILD_ID} ."
+                    
+                    withCredentials([usernamePassword(credentialsId: 'DockerHub-Creds', usernameVariable: 'DockerHubusername', passwordVariable: 'DockerHubpassword')]) {
                         sh """
-                        echo ${DockerHubpassword} | docker login -u ${DockerHubusername} --password-stdin
-                        docker tag ${image_name}:${env.BUILD_ID} ${DockerHubusername}/${image_name}:${env.BUILD_ID}
+                            echo ${DockerHubpassword} | docker login -u ${DockerHubusername} --password-stdin
+                            docker tag ${image_name}:${env.BUILD_ID} ${DockerHubusername}/${image_name}:${env.BUILD_ID}
                         """
-}
+                    }
                 }
             }
         }
-        
-        stage('Trivy Image Scan'){
+
+        stage('Trivy Image Scan') {
             steps {
                 withCredentials([usernamePassword(credentialsId: 'DockerHub-Creds', usernameVariable: 'DockerHubusername', passwordVariable: 'DockerHubpassword')]) {
-                sh 'trivy image ${DockerHubusername}/${image_name}:${env.BUILD_ID}'
+                    sh "trivy image ${DockerHubusername}/${image_name}:${env.BUILD_ID}"
+                }
             }
         }
-    }
-    
-        stage('Push to Docker Hub'){
-          steps{
-              withCredentials([usernamePassword(credentialsId: 'DockerHub-Creds', usernameVariable: 'DockerHubusername', passwordVariable: 'DockerHubpassword')]) {
-            sh 'docker push ${DockerHubusername}/${image_name}:${env.BUILD_ID}'
+
+        stage('Push to Docker Hub') {
+            steps {
+                withCredentials([usernamePassword(credentialsId: 'DockerHub-Creds', usernameVariable: 'DockerHubusername', passwordVariable: 'DockerHubpassword')]) {
+                    sh "docker push ${DockerHubusername}/${image_name}:${env.BUILD_ID}"
+                }
             }
         }
-    }
-        
-       
     }
 }
