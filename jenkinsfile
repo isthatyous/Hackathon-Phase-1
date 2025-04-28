@@ -1,2 +1,64 @@
 pipeline {
+    agent any
+    
+    environment {
+        image_name = 'online-shop-image'  
+    }
 
+    stages {
+        stage('Code Checkout') {
+            steps {
+                git branch: 'feature/feature-branch-1', changelog: false, poll: false, url: 'https://github.com/isthatyous/Hackathon-Phase-1.git'
+            }
+        }
+
+        stage('SonarQube analysis') {
+            steps {
+                script {
+                    // Define the scannerHome variable with the tool location
+                    scannerHome = tool 'SonarQube'
+                }
+                withSonarQubeEnv('SonarQube') {
+                    // Run the SonarQube scanner with the provided configuration
+                    sh """
+                    ${scannerHome}/bin/sonar-scanner \
+                    -Dsonar.projectKey=online-shop-key \
+                    -Dsonar.sources=. \
+                    -Dsonar.host.url=http://3.6.86.193:9100 \
+                    -Dsonar.login=squ_736bf210416e622c9b5517ea0fed8b9280aad05d
+                    """
+                }
+            }
+        }
+
+        stage('Build') {
+            steps {
+                withCredentials([usernamePassword(credentialsId: 'DockerHub-Creds', usernameVariable: 'DockerHubusername', passwordVariable: 'DockerHubpassword')]) {
+                    sh """
+                    echo ${DockerHubpassword} | docker login -u ${DockerHubusername} --password-stdin
+                    docker build -t ${image_name} .
+                    docker tag ${image_name} ${DockerHubusername}/${image_name}:latest
+                    """
+                }
+            }
+        }
+        
+        stage('Trivy Image Scan'){
+            steps {
+                withCredentials([usernamePassword(credentialsId: 'DockerHub-Creds', usernameVariable: 'DockerHubusername', passwordVariable: 'DockerHubpassword')]) {
+                sh 'trivy image ${DockerHubusername}/${image_name}:latest'
+            }
+        }
+    }
+    
+        stage('Push to Docker Hub'){
+          steps{
+              withCredentials([usernamePassword(credentialsId: 'DockerHub-Creds', usernameVariable: 'DockerHubusername', passwordVariable: 'DockerHubpassword')]) {
+              sh 'docker push ${DockerHubusername}/${image_name}:latest'
+            }
+        }
+    }
+        
+       
+    }
+}
