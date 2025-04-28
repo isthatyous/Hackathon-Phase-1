@@ -38,7 +38,7 @@ pipeline {
                         withCredentials([usernamePassword(credentialsId: 'DockerHub-Creds', usernameVariable: 'DockerHubusername', passwordVariable: 'DockerHubpassword')]) {
                             sh """
                             echo ${DockerHubpassword} | docker login -u ${DockerHubusername} --password-stdin
-                            docker tag ${customImage.id} ${DockerHubusername}/${image_name}:{env.BUILD_ID}
+                            docker tag ${DockerHubusername}/${image_name}:{env.BUILD_ID}
                             """
 }
                 }
