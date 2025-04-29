@@ -20,16 +20,16 @@ pipeline {
             }
         }
 
-        stage('SonarQube analysis') {
-            steps {
-                withSonarQubeEnv('SonarQube-Server') {
-                    sh """$SCANNER_HOME/bin/sonar-scanner \
-                          -Dsonar.projectName=online-shop \
-                          -Dsonar.projectKey=online-shop \
-                    """
-                }
-            }
-        }
+        // stage('SonarQube analysis') {
+        //     steps {
+        //         withSonarQubeEnv('SonarQube-Server') {
+        //             sh """$SCANNER_HOME/bin/sonar-scanner \
+        //                   -Dsonar.projectName=online-shop \
+        //                   -Dsonar.projectKey=online-shop \
+        //             """
+        //         }
+        //     }
+        // }
 
         stage('Build & Push') {
             steps {
@@ -38,6 +38,7 @@ pipeline {
                     withCredentials([usernamePassword(credentialsId: 'DockerHub-Creds', usernameVariable: 'DockerHubusername', passwordVariable: 'DockerHubpassword')]) {
                         sh """
                             echo ${DockerHubpassword} | docker login -u ${DockerHubusername} --password-stdin
+                            docker push ${IMAGE_NAME}:${IMAGE_TAG}
                         """
                     }
                 }
@@ -47,7 +48,7 @@ pipeline {
         stage('Trivy Image Scan') {
             steps {
                 withCredentials([usernamePassword(credentialsId: 'DockerHub-Creds', usernameVariable: 'DockerHubusername', passwordVariable: 'DockerHubpassword')]) {
-                    sh "trivy image ${DockerHubusername}/${image_name}:${env.BUILD_ID}"
+                    sh "trivy image ${IMAGE_NAME}:${IMAGE_TAG}"
                 }
             }
         }
