@@ -3,7 +3,7 @@ pipeline {
 
     environment {
         SCANNER_HOME = tool 'Sonar-Scanner'    
-        App_Name = 'online-shop'
+        APP_NAME = 'online-shop'
         RELEASE = '1.0.0'
         DOCKER_USER = 'DockerHub-Creds'
         DOCKER_PASS = 'DockerHub-Creds'
@@ -58,4 +58,4 @@ pipeline {
             }
         }
     
-}
+
