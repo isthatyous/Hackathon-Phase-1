@@ -2,13 +2,14 @@ pipeline {
     agent any
 
     environment {
-        image_name = 'online-shop-image'
         SCANNER_HOME = tool 'Sonar-Scanner'    
         App_Name = 'online-shop'
         RELEASE = '1.0.0'
         DOCKER_USER = 'isthatyou'
         DOCKER_PASS = 'DockerHub-Creds'
         IMAGE_NAME = "${DOCKER_USER}" + "/" + "${APP_NAME}"
+        IMAGE_TAG = "${RELEASE}-${BUILD_NUMBER}"
+        
 
     }
 
@@ -33,15 +34,13 @@ pipeline {
         stage('Build') {
             steps {
                 script {
-                    sh "echo jenkins_${env.BRANCH_NAME}_${env.BUILD_ID}"
-                    
-                    sh "docker build -t ${image_name}:${env.BUILD_ID} ."
-                    
-                    withCredentials([usernamePassword(credentialsId: 'DockerHub-Creds', usernameVariable: 'DockerHubusername', passwordVariable: 'DockerHubpassword')]) {
-                        sh """
-                            echo ${DockerHubpassword} | docker login -u ${DockerHubusername} --password-stdin
-                            docker tag ${image_name}:${env.BUILD_ID} ${DockerHubusername}/${image_name}:${env.BUILD_ID}
-                        """
+                    sh "Building Docker Image"
+                    docker.withRegistry('',DOCKER_PASS) {
+                         docker_image = docker.build "${IMAGE_NAME}"
+                    }
+                    docker.withRegistry('',DOCKER_PASS) {
+                         docker_image.push("${IMAGE_TAG}")
+                         docker_image.push('latest')
                     }
                 }
             }
