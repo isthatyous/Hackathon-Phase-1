@@ -5,7 +5,7 @@ pipeline {
         SCANNER_HOME = tool 'sonar-scanner'    
         APP_NAME = 'online-shop'
         RELEASE = '1.0.0'
-        DOCKER_USER = 'DockerHub-Creds'
+        DOCKER_USER = 'isthatyou'
         DOCKER_PASS = 'DockerHub-Creds'
         IMAGE_NAME = "${DOCKER_USER}" + "/" + "${APP_NAME}"
         IMAGE_TAG = "${RELEASE}-${BUILD_NUMBER}"
