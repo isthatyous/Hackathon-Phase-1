@@ -3,7 +3,7 @@ pipeline {
 
     environment {
         image_name = 'online-shop-image'
-        SCANNER_HOME = tool 'Sonar-Scanner'    done
+        SCANNER_HOME = tool 'Sonar-Scanner'    
         App_Name = 'online-shop'
         RELEASE = '1.0.0'
         DOCKER_USER = 'isthatyou'
