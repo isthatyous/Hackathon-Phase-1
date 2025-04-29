@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        SCANNER_HOME = tool 'Sonar-Scanner'    
+        SCANNER_HOME = tool 'sonar-scanner'    
         APP_NAME = 'online-shop'
         RELEASE = '1.0.0'
         DOCKER_USER = 'DockerHub-Creds'
