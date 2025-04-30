@@ -62,7 +62,7 @@ pipeline {
                     // change branch
                     sh 'cat k8s/online-shop/values.yaml'
                     sh "sed -i 's|tag: \".*\"|tag: \"${IMAGE_TAG}\"|' k8s/online-shop/values.yaml"
-                    sh "cat values.yaml"
+                    sh 'cat k8s/online-shop/values.yaml'
                     sh 'cat k8s/online-shop/values.yaml'
                     echo "========================================================"
 
