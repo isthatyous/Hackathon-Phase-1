@@ -56,6 +56,23 @@ pipeline {
          stage('Trigger CD Job') {
             steps {
                 echo "Updating the manifest file"
+                 withCredentials([usernamePassword(credentialsId: 'Github', usernameVariable: 'gitHubusername', passwordVariable: 'gitHubpassword')]) {
+                    sh "git config user.email shivamsingh22188@gmail.com"
+                    sh "git config user.name isthatyous"
+                    // change branch
+                    sh 'cat k8s/online-shop/values.yaml'
+                    sh "sed -i 's|tag: \".*\"|tag: \"${IMAGE_TAG}\"|' k8s/online-shop/values.yaml"
+                    sh "cat values.yaml"
+                    sh 'cat k8s/online-shop/values.yaml'
+
+                     // Add, commit, and push changes
+                    sh 'git add k8s/online-shop/values.yaml'
+                    sh "git commit -m 'Update image tag to ${IMAGE_TAG}' || echo 'No changes to commit'"
+                    sh 'git push origin feature/feature-branch-1'
+                    
+
+                }
+                
             
                 
             }
