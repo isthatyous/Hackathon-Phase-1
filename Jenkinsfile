@@ -53,6 +53,14 @@ pipeline {
             }
         }
 
+         stage('Trigger CD Job') {
+            steps {
+                echo "Updating the manifest file"
+            
+                
+            }
+        }
+
       
             }
         }
