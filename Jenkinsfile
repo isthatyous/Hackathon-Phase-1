@@ -34,7 +34,7 @@ pipeline {
         stage('Build & Push') {
             steps {
                  script {
-                    sh "docker build -t ${IMAGE_NAME} ."
+                    sh "docker build -t ${IMAGE_NAME}:${IMAGE_TAG}."
                     withCredentials([usernamePassword(credentialsId: 'DockerHub-Creds', usernameVariable: 'DockerHubusername', passwordVariable: 'DockerHubpassword')]) {
                         sh """
                             echo ${DockerHubpassword} | docker login -u ${DockerHubusername} --password-stdin
