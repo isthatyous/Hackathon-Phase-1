@@ -64,6 +64,7 @@ pipeline {
                     sh "sed -i 's|tag: \".*\"|tag: \"${IMAGE_TAG}\"|' k8s/online-shop/values.yaml"
                     sh "cat values.yaml"
                     sh 'cat k8s/online-shop/values.yaml'
+                    echo "========================================================"
 
                      // Add, commit, and push changes
                     sh 'git add k8s/online-shop/values.yaml'
