@@ -69,6 +69,7 @@ pipeline {
                      // Add, commit, and push changes
                     sh 'git add k8s/online-shop/values.yaml'
                     sh "git commit -m 'Update image tag to ${IMAGE_TAG}' || echo 'No changes to commit'"
+                    sh 'git remote set-url origin https://${gitHubusername}:${gitHubpassword}@github.com/isthatyou/your-repo-name.git'
                     sh 'git push origin feature/feature-branch-1'
                     
 
